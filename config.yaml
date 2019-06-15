@@ -1,0 +1,7 @@
+application:
+  - name: Line
+    id: 443904275
+    country: jp
+
+slack:
+  - webhook_url:
