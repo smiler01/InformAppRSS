@@ -6,6 +6,8 @@ from bs4 import BeautifulSoup
 from contextlib import closing
 from datetime import datetime
 
+import logger
+
 
 class Controller(object):
 
@@ -19,8 +21,11 @@ class Controller(object):
         self.APP_RSS_URL = "http://itunes.apple.com/{}/rss/customerreviews/id={}/sortBy=mostRecent/xml".format(
             self.APP_COUNTRY, self.APP_ID)
 
+        self.log = logger.Logger(target_file_path=__name__)
+
         if not os.path.exists("./database"):
             os.makedirs("./database")
+            self.log.logger.info("makedirs ./database")
 
     def check_existence_review_database(self):
 
@@ -36,8 +41,10 @@ class Controller(object):
                 body = response.read().decode("utf-8")
         except urllib.error.HTTPError as err:
             print("HTTPError: {}".format(err.code))
+            self.log.logger.error("HTTPError: {}".format(err.code))
         except urllib.error.URLError as err:
             print("URLError: {}".format(err.reason))
+            self.log.logger.error("URLError: {}".format(err.reason))
 
         soup = BeautifulSoup(body, "html.parser")
 
@@ -76,6 +83,7 @@ class Controller(object):
                 conn.commit()
 
         except Exception as e:
+            self.log.logger.warning(e)
             print(e)
 
     def update_review_database(self, latest_review_list):
@@ -93,6 +101,7 @@ class Controller(object):
                 conn.commit()
 
         except Exception as e:
+            self.log.logger.warning(e)
             print(e)
 
     def check_latest_reviews(self):
@@ -122,6 +131,7 @@ class Controller(object):
                 conn.commit()
 
         except Exception as e:
+            self.log.logger.warning(e)
             print(e)
 
         return latest_review_list
