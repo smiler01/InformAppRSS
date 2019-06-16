@@ -34,6 +34,5 @@ def main():
 
         database_controller.update_review_database(latest_review_list)
 
-
 if __name__ == "__main__":
     main()
