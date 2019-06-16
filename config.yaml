@@ -2,6 +2,9 @@ application:
   - name: Line
     id: 443904275
     country: jp
+  - name: Twitter
+    id: 333903271
+    country: jp
 
 slack:
-  - webhook_url:
+  - webhook_url: https://hooks.slack.com/services/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
