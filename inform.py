@@ -25,7 +25,7 @@ class SlackInform(object):
                 {
                     "fallback": "This is rss reviews attachments",
                     "color": self.COLOR_LIST[int(rating)-1],
-                    "pretext": "{} Review".format(app_name),
+                    "pretext": "{}の新着レビューです！！".format(app_name),
                     "fields": [
                         {
                             "title": "User",
@@ -41,7 +41,7 @@ class SlackInform(object):
                         },
                         {
                             "title": "Rating",
-                            "value": rating,
+                            "value": ":star:"*int(rating),
                             "short": "true"
                         },
                         {
