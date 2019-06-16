@@ -16,7 +16,7 @@ class Controller(object):
         self.APP_COUNTRY = app_country
         self.DB_PATH = "./database/{}.db".format(self.APP_NAME)
         self.TABLE_NAME = "reviews"
-        self.APP_RSS_URL = "http://itunes.apple.com/{}/rss/customerreviews/id={}/xml".format(
+        self.APP_RSS_URL = "http://itunes.apple.com/{}/rss/customerreviews/id={}/sortBy=mostRecent/xml".format(
             self.APP_COUNTRY, self.APP_ID)
 
         if not os.path.exists("./database"):
@@ -46,11 +46,13 @@ class Controller(object):
             review_dict.append({
                 "updated": entry.find("updated").string,
                 "username": entry.find("name").string,
-                "userid": entry.find("id").string,
+                "entry_id": entry.find("id").string,
                 "title": entry.find("title").string,
                 "summary": entry.find("content").string,
                 "rating": entry.find("im:rating").string,
                 "version": entry.find("im:version").string})
+
+        review_dict.reverse()
 
         return review_dict
 
@@ -62,11 +64,11 @@ class Controller(object):
                 connection = conn.cursor()
 
                 create_sql = """CREATE TABLE {} (id INTEGER PRIMARY KEY AUTOINCREMENT, 
-                    updated VARCHAR(255), username VARCHAR(255), userid INT, title TEXT, 
+                    updated VARCHAR(255), username VARCHAR(255), entry_id INT, title TEXT, 
                     summary TEXT, rating INT, version INT) """.format(self.TABLE_NAME)
                 connection.execute(create_sql)
 
-                insert_sql = """INSERT INTO {} (updated, username, userid, title, summary, 
+                insert_sql = """INSERT INTO {} (updated, username, entry_id, title, summary, 
                     rating, version) VALUES (?,?,?,?,?,?,?)""".format(self.TABLE_NAME)
                 review_values = [tuple(review.values()) for review in self.get_app_reviews()]
                 connection.executemany(insert_sql, review_values)
@@ -83,7 +85,7 @@ class Controller(object):
 
                 connection = conn.cursor()
 
-                insert_sql = """INSERT INTO {} (updated, username, userid, title, summary, 
+                insert_sql = """INSERT INTO {} (updated, username, entry_id, title, summary, 
                     rating, version) VALUES (?,?,?,?,?,?,?)""".format(self.TABLE_NAME)
                 review_values = [tuple(review.values()) for review in latest_review_list]
                 connection.executemany(insert_sql, review_values)
@@ -104,15 +106,17 @@ class Controller(object):
 
                 connection = conn.cursor()
 
-                select_sql = """SELECT updated FROM {}""".format(self.TABLE_NAME)
+                select_sql = """SELECT updated, entry_id FROM {} ORDER BY id DESC""".format(self.TABLE_NAME)
                 connection.execute(select_sql)
-                previous_timestamp = convert_to_timestamp(connection.fetchone()[0])
+                previous_time_string, previous_entry_id = connection.fetchone()
+                previous_timestamp = convert_to_timestamp(previous_time_string)
 
                 latest_review_list = []
                 for review in self.get_app_reviews():
                     target_timestamp = convert_to_timestamp(review["updated"])
+                    target_entry_id = review["entry_id"]
 
-                    if target_timestamp > previous_timestamp:
+                    if target_timestamp > previous_timestamp and target_entry_id != previous_entry_id:
                         latest_review_list.append(review)
 
                 conn.commit()
@@ -121,3 +125,5 @@ class Controller(object):
             print(e)
 
         return latest_review_list
+
+
