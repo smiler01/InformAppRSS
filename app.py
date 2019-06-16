@@ -1,9 +1,9 @@
 # coding: utf-8
 import os
 import yaml
-from database import controller
-import inform
 
+import controller
+import inform
 import logger
 
 CONFIG_PATH = "./config.yaml"
