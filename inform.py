@@ -74,11 +74,8 @@ class SlackInform(object):
             with urllib.request.urlopen(request) as response:
                 result = response.read().decode("utf-8")
                 self.log.logger.info("{}, inform latest reviews".format(result))
-                print(result)
         except urllib.error.HTTPError as err:
-            print("HTTPError: {}".format(err.code))
             self.log.logger.error("HTTPError: {}".format(err.code))
         except urllib.error.URLError as err:
-            print("URLError: {}".format(err.reason))
             self.log.logger.error("URLError: {}".format(err.reason))
 
