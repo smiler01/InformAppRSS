@@ -103,7 +103,6 @@ class Controller(object):
     def check_latest_reviews(self):
 
         def convert_to_timestamp(string_time=None):
-            print(string_time)
             date = datetime.strptime(string_time, "%Y-%m-%dT%H:%M:%S-07:00")
             return date.timestamp()
 
@@ -117,6 +116,7 @@ class Controller(object):
                 select_sql = """SELECT updated, entry_id FROM {} ORDER BY id DESC""".format(self.TABLE_NAME)
                 connection.execute(select_sql)
                 previous_time_string, previous_entry_id = connection.fetchone()
+                print(previous_time_string, previous_entry_id)
                 previous_timestamp = convert_to_timestamp(previous_time_string)
 
                 for review in self.get_app_reviews():
