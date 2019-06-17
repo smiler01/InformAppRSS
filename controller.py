@@ -110,6 +110,8 @@ class Controller(object):
             date = datetime.strptime(string_time, "%Y-%m-%dT%H:%M:%S-07:00")
             return date.timestamp()
 
+        latest_review_list = []
+
         try:
             with closing(sqlite3.connect(self.DB_PATH)) as conn:
 
@@ -120,7 +122,6 @@ class Controller(object):
                 previous_time_string, previous_entry_id = connection.fetchone()
                 previous_timestamp = convert_to_timestamp(previous_time_string)
 
-                latest_review_list = []
                 for review in self.get_app_reviews():
                     target_timestamp = convert_to_timestamp(review["updated"])
                     target_entry_id = review["entry_id"]
@@ -134,6 +135,6 @@ class Controller(object):
             self.log.logger.warning(e)
             print(e)
 
-        return latest_review_list
+        return
 
 
