@@ -40,10 +40,8 @@ class Controller(object):
             with urllib.request.urlopen(request) as response:
                 body = response.read().decode("utf-8")
         except urllib.error.HTTPError as err:
-            print("HTTPError: {}".format(err.code))
             self.log.logger.error("HTTPError: {}".format(err.code))
         except urllib.error.URLError as err:
-            print("URLError: {}".format(err.reason))
             self.log.logger.error("URLError: {}".format(err.reason))
 
         soup = BeautifulSoup(body, "html.parser")
@@ -84,7 +82,6 @@ class Controller(object):
 
         except Exception as e:
             self.log.logger.warning(e)
-            print(e)
 
     def update_review_database(self, latest_review_list):
 
@@ -102,7 +99,6 @@ class Controller(object):
 
         except Exception as e:
             self.log.logger.warning(e)
-            print(e)
 
     def check_latest_reviews(self):
 
@@ -134,7 +130,6 @@ class Controller(object):
 
         except Exception as e:
             self.log.logger.warning(e)
-            print(e)
 
         return latest_review_list
 
