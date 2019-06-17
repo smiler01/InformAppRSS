@@ -135,6 +135,6 @@ class Controller(object):
             self.log.logger.warning(e)
             print(e)
 
-        return
+        return latest_review_list
 
 
