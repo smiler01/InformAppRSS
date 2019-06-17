@@ -107,6 +107,7 @@ class Controller(object):
     def check_latest_reviews(self):
 
         def convert_to_timestamp(string_time=None):
+            print(string_time)
             date = datetime.strptime(string_time, "%Y-%m-%dT%H:%M:%S-07:00")
             return date.timestamp()
 
