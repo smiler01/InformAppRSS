@@ -5,8 +5,9 @@ import sqlite3
 from bs4 import BeautifulSoup
 from contextlib import closing
 from datetime import datetime
+from logging import getLogger
 
-import logger
+logger = getLogger(__name__)
 
 
 class Controller(object):
@@ -21,11 +22,8 @@ class Controller(object):
         self.APP_RSS_URL = "http://itunes.apple.com/{}/rss/customerreviews/id={}/sortBy=mostRecent/xml".format(
             self.APP_COUNTRY, self.APP_ID)
 
-        self.log = logger.Logger(target_file_path=__name__)
-
         if not os.path.exists("./database"):
             os.makedirs("./database")
-            self.log.logger.info("makedirs ./database")
 
     def check_existence_review_database(self):
 
@@ -40,9 +38,9 @@ class Controller(object):
             with urllib.request.urlopen(request) as response:
                 body = response.read().decode("utf-8")
         except urllib.error.HTTPError as err:
-            self.log.logger.error("HTTPError: {}".format(err.code))
+            logger.error("HTTPError: {}".format(err.code))
         except urllib.error.URLError as err:
-            self.log.logger.error("URLError: {}".format(err.reason))
+            logger.error("URLError: {}".format(err.reason))
 
         soup = BeautifulSoup(body, "html.parser")
 
@@ -71,17 +69,19 @@ class Controller(object):
                 create_sql = """CREATE TABLE {} (id INTEGER PRIMARY KEY AUTOINCREMENT, 
                     updated VARCHAR(255), username VARCHAR(255), entry_id INT, title TEXT, 
                     summary TEXT, rating INT, version INT) """.format(self.TABLE_NAME)
+                logger.info(create_sql)
                 connection.execute(create_sql)
 
                 insert_sql = """INSERT INTO {} (updated, username, entry_id, title, summary, 
                     rating, version) VALUES (?,?,?,?,?,?,?)""".format(self.TABLE_NAME)
+                logger.info(insert_sql)
                 review_values = [tuple(review.values()) for review in self.get_app_reviews()]
                 connection.executemany(insert_sql, review_values)
 
                 conn.commit()
 
         except Exception as e:
-            self.log.logger.warning(e)
+            logger.warning(e)
 
     def update_review_database(self, latest_review_list):
 
@@ -92,13 +92,14 @@ class Controller(object):
 
                 insert_sql = """INSERT INTO {} (updated, username, entry_id, title, summary, 
                     rating, version) VALUES (?,?,?,?,?,?,?)""".format(self.TABLE_NAME)
+                logger.info(insert_sql)
                 review_values = [tuple(review.values()) for review in latest_review_list]
                 connection.executemany(insert_sql, review_values)
 
                 conn.commit()
 
         except Exception as e:
-            self.log.logger.warning(e)
+            logger.warning(e)
 
     def check_latest_reviews(self):
 
@@ -114,9 +115,9 @@ class Controller(object):
                 connection = conn.cursor()
 
                 select_sql = """SELECT updated, entry_id FROM {} ORDER BY id DESC""".format(self.TABLE_NAME)
+                logger.indo(select_sql)
                 connection.execute(select_sql)
                 previous_time_string, previous_entry_id = connection.fetchone()
-                print(previous_time_string, previous_entry_id)
                 previous_timestamp = convert_to_timestamp(previous_time_string)
 
                 for review in self.get_app_reviews():
@@ -129,7 +130,7 @@ class Controller(object):
                 conn.commit()
 
         except Exception as e:
-            self.log.logger.warning(e)
+            logger.warning(e)
 
         return latest_review_list
 
