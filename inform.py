@@ -1,8 +1,9 @@
 # coding: utf-8
 import urllib.request
 import json
+from logging import getLogger
 
-import logger
+logger = getLogger(__name__)
 
 
 class SlackInform(object):
@@ -12,8 +13,6 @@ class SlackInform(object):
         self.METHOD = "POST"
         self.HEADERS = {'Content-Type': 'application/json; charset=utf-8'}
         self.COLOR_LIST = ["danger", "warning", "", "good", "hex"]
-
-        self.log = logger.Logger(target_file_path=__name__)
 
     def format_app_review_attachments(self, app_name, review):
 
@@ -73,9 +72,9 @@ class SlackInform(object):
         try:
             with urllib.request.urlopen(request) as response:
                 result = response.read().decode("utf-8")
-                self.log.logger.info("{}, inform latest reviews".format(result))
+                logger.info("{}, inform latest reviews".format(result))
         except urllib.error.HTTPError as err:
-            self.log.logger.error("HTTPError: {}".format(err.code))
+            logger.error("HTTPError: {}".format(err.code))
         except urllib.error.URLError as err:
-            self.log.logger.error("URLError: {}".format(err.reason))
+            logger.error("URLError: {}".format(err.reason))
 
