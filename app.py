@@ -10,11 +10,11 @@ LOG_DIR_PATH = "./log"
 if not os.path.exists(LOG_DIR_PATH):
     os.makedirs(LOG_DIR_PATH)
 
-CONFIG_LOGGING = "./logging.conf"
+CONFIG_LOGGING = "./config/logging.conf"
 logging.config.fileConfig(CONFIG_LOGGING)
 logger = logging.getLogger()
 
-CONFIG_PATH = "./config.yaml"
+CONFIG_PATH = "./config/config.yaml"
 with open(CONFIG_PATH) as file:
     config = yaml.load(stream=file, Loader=yaml.SafeLoader)
 logger.info("Load config parameters")
