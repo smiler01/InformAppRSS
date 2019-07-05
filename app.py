@@ -1,9 +1,14 @@
 # coding: utf-8
+import os
 import yaml
 import logging.config
 
 import controller
 import inform
+
+LOG_DIR_PATH = "./log"
+if not os.path.exists(LOG_DIR_PATH):
+    os.makedirs(LOG_DIR_PATH)
 
 CONFIG_LOGGING = "./logging.conf"
 logging.config.fileConfig(CONFIG_LOGGING)
